@@ -33,7 +33,7 @@ public class RequestHandler implements Runnable {
             }
 
             DataOutputStream dos = new DataOutputStream(out);
-            byte[] body = RequestUtil.findDocuments(url);
+            byte[] body = RequestUtil.findResources(url);
 
             response200Header(dos, body.length);
             responseBody(dos, body);

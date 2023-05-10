@@ -5,7 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 public class RequestUtil {
-    public static byte[] findDocuments(String url) throws IOException {
+    public static byte[] findResources(String url) throws IOException {
         String resourcePath = "static";
         if (url.endsWith(".html")) {
             resourcePath = "templates";
