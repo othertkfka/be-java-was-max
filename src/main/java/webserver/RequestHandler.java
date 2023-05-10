@@ -3,11 +3,10 @@ package webserver;
 import java.io.*;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import util.RequestUtil;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
@@ -26,7 +25,7 @@ public class RequestHandler implements Runnable {
             BufferedReader br = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
             String line = br.readLine();
             logger.debug("request line : {}", line);
-            String url = separateUrl(line);
+            String url = RequestUtil.separateUrl(line);
 
             while(!line.equals("")){
                 line = br.readLine();
@@ -34,26 +33,13 @@ public class RequestHandler implements Runnable {
             }
 
             DataOutputStream dos = new DataOutputStream(out);
-            byte[] body = findDocuments(url);
+            byte[] body = RequestUtil.findDocuments(url);
 
             response200Header(dos, body.length);
             responseBody(dos, body);
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
-    }
-
-    private byte[] findDocuments(String url) throws IOException {
-        String resourcePath = "static";
-        if (url.endsWith(".html")) {
-            resourcePath = "templates";
-        }
-        return Files.readAllBytes(Paths.get("./src/main/resources/" + resourcePath + url));
-    }
-
-    private String separateUrl(String requestLine) {
-        String[] splitLine = requestLine.split(" ");
-        return splitLine[1];
     }
 
     private void response200Header(DataOutputStream dos, int lengthOfBodyContent) {
