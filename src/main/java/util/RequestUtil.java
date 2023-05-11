@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class RequestUtil {
-    public static byte[] findResources(String url) throws IOException {
+    public static byte[] findResource(String url) throws IOException {
         String resourcePath = "static";
         if (url.endsWith(".html")) {
             resourcePath = "templates";

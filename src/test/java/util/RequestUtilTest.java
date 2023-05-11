@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.HashMap;
 import java.util.Map;
 
 public class RequestUtilTest {
@@ -30,8 +29,8 @@ public class RequestUtilTest {
         String html = "/index.html";
         String css = "/css/bootstrap.min.css";
         //when
-        byte[] resource = RequestUtil.findResources(html);
-        byte[] resource2 = RequestUtil.findResources(css);
+        byte[] resource = RequestUtil.findResource(html);
+        byte[] resource2 = RequestUtil.findResource(css);
         //then
         assertThat(resource).isEqualTo(Files.readAllBytes(Paths.get("./src/main/resources/templates/index.html")));
         assertThat(resource2).isEqualTo(Files.readAllBytes(Paths.get("./src/main/resources/static/css/bootstrap.min.css")));
