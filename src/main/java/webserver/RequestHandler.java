@@ -44,17 +44,17 @@ public class RequestHandler implements Runnable {
             DataOutputStream dos = new DataOutputStream(out);
             byte[] body = RequestUtil.findResources(url);
 
-            response200Header(dos, body.length);
+            response200Header(dos, body.length, getContentType(url));
             responseBody(dos, body);
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
     }
 
-    private void response200Header(DataOutputStream dos, int lengthOfBodyContent) {
+    private void response200Header(DataOutputStream dos, int lengthOfBodyContent, String contentType) {
         try {
             dos.writeBytes("HTTP/1.1 200 OK \r\n");
-            dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n");
+            dos.writeBytes("Content-Type: " + contentType + ";charset=utf-8\r\n");
             dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
             dos.writeBytes("\r\n");
         } catch (IOException e) {
@@ -69,5 +69,23 @@ public class RequestHandler implements Runnable {
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
+    }
+
+    private String getContentType(String url) {
+        String contentType = "";
+        if (url.endsWith(".html")) {
+            contentType = "text/html";
+        } else if (url.endsWith(".css")) {
+            contentType = "text/css";
+        } else if (url.endsWith(".js")) {
+            contentType = "application/x-javascript";
+        } else if (url.endsWith(".ico")) {
+            contentType = "image/x-icon";
+        } else if (url.endsWith(".png")) {
+            contentType = "image/png";
+        } else if (url.endsWith(".jpg")) {
+            contentType = "image/jpg";
+        }
+        return contentType;
     }
 }
