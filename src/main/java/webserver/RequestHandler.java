@@ -32,8 +32,8 @@ public class RequestHandler implements Runnable {
             String[] tokens = requestUrl.split("\\?");
             String url = tokens[0];
             if (tokens.length > 1) {
-                Map queryMap = RequestUtil.parseQueryString(tokens[1]);
-                User user = new User((String)queryMap.get("userId"), (String)queryMap.get("password"), (String)queryMap.get("name"), (String)queryMap.get("email"));
+                Map<String, String> queryMap = RequestUtil.parseQueryString(tokens[1]);
+                User user = new User(queryMap.get("userId"), queryMap.get("password"), queryMap.get("name"), queryMap.get("email"));
             }
 
             while(!line.equals("")){

@@ -20,7 +20,7 @@ public class RequestUtil {
         return splitLine[1];
     }
 
-    public static Map parseQueryString(String queryString) {
+    public static Map<String, String> parseQueryString(String queryString) {
         Map<String, String> queryMap = new HashMap<>();
 
         String[] splitQuery = queryString.split("&");
