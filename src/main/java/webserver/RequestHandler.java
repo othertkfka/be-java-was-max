@@ -3,7 +3,9 @@ package webserver;
 import java.io.*;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 
+import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import util.RequestUtil;
@@ -30,7 +32,8 @@ public class RequestHandler implements Runnable {
             String[] tokens = requestUrl.split("\\?");
             String url = tokens[0];
             if (tokens.length > 1) {
-                RequestUtil.parseQueryString(tokens[1]);
+                Map queryMap = RequestUtil.parseQueryString(tokens[1]);
+                User user = new User((String)queryMap.get("userId"), (String)queryMap.get("password"), (String)queryMap.get("name"), (String)queryMap.get("email"));
             }
 
             while(!line.equals("")){
