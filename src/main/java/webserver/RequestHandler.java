@@ -25,7 +25,13 @@ public class RequestHandler implements Runnable {
             BufferedReader br = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
             String line = br.readLine();
             logger.debug("request line : {}", line);
-            String url = RequestUtil.separateUrl(line);
+            String requestUrl = RequestUtil.separateUrl(line);
+
+            String[] tokens = requestUrl.split("\\?");
+            String url = tokens[0];
+            if (tokens.length > 1) {
+                RequestUtil.parseQueryString(tokens[1]);
+            }
 
             while(!line.equals("")){
                 line = br.readLine();
