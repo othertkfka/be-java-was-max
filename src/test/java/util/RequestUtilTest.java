@@ -1,12 +1,14 @@
 package util;
 
-import org.assertj.core.api.Assertions;
+import static org.assertj.core.api.Assertions.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
 
 public class RequestUtilTest {
 
@@ -18,7 +20,7 @@ public class RequestUtilTest {
         //when
         String url = RequestUtil.separateUrl(requestLine);
         //then
-        Assertions.assertThat(url).isEqualTo("/index.html");
+        assertThat(url).isEqualTo("/index.html");
     }
 
     @Test
@@ -31,7 +33,21 @@ public class RequestUtilTest {
         byte[] resource = RequestUtil.findResources(html);
         byte[] resource2 = RequestUtil.findResources(css);
         //then
-        Assertions.assertThat(resource).isEqualTo(Files.readAllBytes(Paths.get("./src/main/resources/templates/index.html")));
-        Assertions.assertThat(resource2).isEqualTo(Files.readAllBytes(Paths.get("./src/main/resources/static/css/bootstrap.min.css")));
+        assertThat(resource).isEqualTo(Files.readAllBytes(Paths.get("./src/main/resources/templates/index.html")));
+        assertThat(resource2).isEqualTo(Files.readAllBytes(Paths.get("./src/main/resources/static/css/bootstrap.min.css")));
+    }
+
+    @Test
+    @DisplayName("쿼리스트링의 파라미터를 각각 분리하여 Map으로 반환한다.")
+    public void parseQueryStringTest() {
+        //given
+        String queryString = "userId=sjseop2&password=5678&name=sjs&email=sjs%40naver.com";
+        //when
+        Map<String, String> result = RequestUtil.parseQueryString(queryString);
+        //then
+        assertThat(result.get("userId")).isEqualTo("sjseop2");
+        assertThat(result.get("password")).isEqualTo("5678");
+        assertThat(result.get("name")).isEqualTo("sjs");
+        assertThat(result.get("email")).isEqualTo("sjs%40naver.com");
     }
 }
