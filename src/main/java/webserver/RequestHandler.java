@@ -78,7 +78,7 @@ public class RequestHandler implements Runnable {
         } else if (url.endsWith(".css")) {
             contentType = "text/css";
         } else if (url.endsWith(".js")) {
-            contentType = "application/x-javascript";
+            contentType = "application/javascript";
         } else if (url.endsWith(".ico")) {
             contentType = "image/x-icon";
         } else if (url.endsWith(".png")) {

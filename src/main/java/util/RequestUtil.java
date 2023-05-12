@@ -12,6 +12,12 @@ public class RequestUtil {
         if (url.endsWith(".html")) {
             resourcePath = "templates";
         }
+
+        if (url.equals("/")) {
+            resourcePath = "templates";
+            url = "/index.html";
+        }
+
         return Files.readAllBytes(Paths.get("./src/main/resources/" + resourcePath + url));
     }
 
