@@ -35,10 +35,10 @@ public class HttpRequest {
         while(true){
             line = br.readLine();
             logger.debug("header{ {} }", line);
-            String[] tokens = line.split(":");
             if (line.equals("")) {
                 break;
             }
+            String[] tokens = line.split(":", 2);
             headers.put(tokens[0], tokens[1].trim());
         }
     }
