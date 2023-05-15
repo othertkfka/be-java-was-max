@@ -26,8 +26,7 @@ public class RequestHandler implements Runnable {
                 connection.getPort());
 
         try (
-                InputStream in = connection.getInputStream();
-                BufferedReader br = new BufferedReader(new InputStreamReader(in));
+                BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
                 OutputStream out = connection.getOutputStream()
         ) {
             HttpRequest httpRequest = new HttpRequest(br);
