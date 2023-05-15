@@ -25,8 +25,11 @@ public class RequestHandler implements Runnable {
         logger.debug("New Client Connect! Connected IP : {}, Port : {}", connection.getInetAddress(),
                 connection.getPort());
 
-        try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
-            BufferedReader br = new BufferedReader(new InputStreamReader(in));
+        try (
+                InputStream in = connection.getInputStream();
+                BufferedReader br = new BufferedReader(new InputStreamReader(in));
+                OutputStream out = connection.getOutputStream()
+        ) {
             HttpRequest httpRequest = new HttpRequest(br);
             String requestUrl = httpRequest.getRequestUrl();
 
