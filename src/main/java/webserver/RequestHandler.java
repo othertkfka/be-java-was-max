@@ -2,9 +2,11 @@ package webserver;
 
 import java.io.*;
 import java.net.Socket;
+import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
+import http.HttpRequest;
 import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,21 +26,15 @@ public class RequestHandler implements Runnable {
                 connection.getPort());
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
-            BufferedReader br = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
-            String line = br.readLine();
-            logger.debug("request line : {}", line);
-            String requestUrl = RequestUtil.separateUrl(line);
+            BufferedReader br = new BufferedReader(new InputStreamReader(in));
+            HttpRequest httpRequest = new HttpRequest(br);
+            String requestUrl = httpRequest.getRequestUrl();
 
             String[] tokens = requestUrl.split("\\?");
             String url = tokens[0];
             if (tokens.length > 1) {
                 Map<String, String> queryMap = RequestUtil.parseQueryString(tokens[1]);
                 User user = new User(queryMap.get("userId"), queryMap.get("password"), queryMap.get("name"), queryMap.get("email"));
-            }
-
-            while(!line.equals("")){
-                line = br.readLine();
-                logger.debug("request : {}", line);
             }
 
             DataOutputStream dos = new DataOutputStream(out);
