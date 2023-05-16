@@ -30,14 +30,9 @@ public class RequestHandler implements Runnable {
                 OutputStream out = connection.getOutputStream()
         ) {
             HttpRequest httpRequest = new HttpRequest(br);
-            String requestUrl = httpRequest.getRequestUrl();
 
-            String[] tokens = requestUrl.split("\\?");
-            String url = tokens[0];
-            if (tokens.length > 1) {
-                Map<String, String> queryMap = RequestUtil.parseQueryString(tokens[1]);
-                User user = new User(queryMap.get("userId"), queryMap.get("password"), queryMap.get("name"), queryMap.get("email"));
-            }
+            HandlerMapping handlerMapping = new HandlerMapping();
+            String url = handlerMapping.handleRequest(httpRequest);
 
             DataOutputStream dos = new DataOutputStream(out);
             byte[] body = RequestUtil.findResource(url);
