@@ -28,6 +28,10 @@ public class HttpRequest {
         return startLine.getMethod();
     }
 
+    public Map<String, String> getRequestParam() {
+        return requestParam;
+    }
+
     private void createHttpRequest(BufferedReader br) throws IOException {
         logger.debug("====Http Request Message====");
         // start line
