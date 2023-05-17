@@ -2,12 +2,9 @@ package webserver;
 
 import java.io.*;
 import java.net.Socket;
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
-import java.util.Map;
 
 import http.HttpRequest;
-import model.User;
+import http.HttpResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import util.RequestUtil;
@@ -27,26 +24,26 @@ public class RequestHandler implements Runnable {
 
         try (
                 BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                OutputStream out = connection.getOutputStream()
+                DataOutputStream dos = new DataOutputStream(connection.getOutputStream())
         ) {
             HttpRequest httpRequest = new HttpRequest(br);
+            HttpResponse httpResponse = new HttpResponse();
 
             HandlerMapping handlerMapping = new HandlerMapping();
-            String url = handlerMapping.handleRequest(httpRequest);
+            String url = handlerMapping.handleRequest(httpRequest, httpResponse);
 
-            DataOutputStream dos = new DataOutputStream(out);
             byte[] body = RequestUtil.findResource(url);
 
-            response200Header(dos, body.length, getContentType(url));
+            responseHeader(dos, body.length, getContentType(url), httpResponse);
             responseBody(dos, body);
         } catch (IOException e) {
-            logger.error(e.getMessage());
+            e.printStackTrace();
         }
     }
 
-    private void response200Header(DataOutputStream dos, int lengthOfBodyContent, String contentType) {
+    private void responseHeader(DataOutputStream dos, int lengthOfBodyContent, String contentType, HttpResponse httpResponse) {
         try {
-            dos.writeBytes("HTTP/1.1 200 OK \r\n");
+            dos.writeBytes("HTTP/1.1 " + httpResponse.getStatusCode() + " " + httpResponse.getStatusText() + "\r\n");
             dos.writeBytes("Content-Type: " + contentType + ";charset=utf-8\r\n");
             dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
             dos.writeBytes("\r\n");

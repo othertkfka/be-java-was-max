@@ -11,6 +11,18 @@ public class StatusLine {
         statusText = "OK";
     }
 
+    public void setStatusCode(int statusCode) {
+        this.statusCode = statusCode;
+    }
+
+    public int getStatusCode() {
+        return statusCode;
+    }
+
+    public String getStatusText() {
+        return statusText;
+    }
+
     public String getStatusLine() {
         return version + " " + statusCode + " " + statusText;
     }

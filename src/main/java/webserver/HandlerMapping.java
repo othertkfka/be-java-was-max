@@ -1,6 +1,7 @@
 package webserver;
 
 import http.HttpRequest;
+import http.HttpResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,7 +19,7 @@ public class HandlerMapping {
     private final String MAPPING_PATH = "/config/mapping.properties";
     private Properties properties = new Properties();
 
-    public String handleRequest(HttpRequest httpRequest) {
+    public String handleRequest(HttpRequest httpRequest, HttpResponse httpResponse) {
         String requestUrl = httpRequest.getRequestUrl();
         if (requestUrl.matches(".+\\.[^./]+$")) {
             return requestUrl;
@@ -33,8 +34,8 @@ public class HandlerMapping {
             Class<?> cls = Class.forName("controller." + className);
             Constructor<?> constructor = cls.getConstructor(null);
             Object instance = constructor.newInstance();
-            Method method = cls.getDeclaredMethod(methodName, HttpRequest.class);
-            view = (String) method.invoke(instance, httpRequest);
+            Method method = cls.getDeclaredMethod(methodName, HttpRequest.class, HttpResponse.class);
+            view = (String) method.invoke(instance, httpRequest, httpResponse);
             logger.debug("View Name : {}", view);
         } catch (Exception e) {
             e.printStackTrace();
