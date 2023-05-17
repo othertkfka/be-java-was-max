@@ -2,12 +2,15 @@ package webserver;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.Map;
 
 import http.HttpRequest;
 import http.HttpResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import util.RequestUtil;
+
+import javax.swing.text.View;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
@@ -30,52 +33,38 @@ public class RequestHandler implements Runnable {
             HttpResponse httpResponse = new HttpResponse();
 
             HandlerMapping handlerMapping = new HandlerMapping();
-            String url = handlerMapping.handleRequest(httpRequest, httpResponse);
+            String view = handlerMapping.handleRequest(httpRequest, httpResponse);
 
-            byte[] body = RequestUtil.findResource(url);
-
-            responseHeader(dos, body.length, getContentType(url), httpResponse);
-            responseBody(dos, body);
+            ViewResolver.resolve(view, httpResponse);
+            responseHeader(dos, httpResponse);
+            responseBody(dos, httpResponse);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private void responseHeader(DataOutputStream dos, int lengthOfBodyContent, String contentType, HttpResponse httpResponse) {
+    private void responseHeader(DataOutputStream dos, HttpResponse httpResponse) {
         try {
-            dos.writeBytes("HTTP/1.1 " + httpResponse.getStatusCode() + " " + httpResponse.getStatusText() + "\r\n");
-            dos.writeBytes("Content-Type: " + contentType + ";charset=utf-8\r\n");
-            dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
+            dos.writeBytes(httpResponse.getStatusLine() + "\r\n");
+            Map<String, String> headers = httpResponse.getHeaders();
+            for (String header : headers.keySet()) {
+                dos.writeBytes(header + ": " + headers.get(header) + "\r\n");
+            }
             dos.writeBytes("\r\n");
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
     }
 
-    private void responseBody(DataOutputStream dos, byte[] body) {
+    private void responseBody(DataOutputStream dos, HttpResponse httpResponse) {
         try {
-            dos.write(body, 0, body.length);
+            byte[] body = httpResponse.getBody();
+            if (body != null) {
+                dos.write(body, 0, body.length);
+            }
             dos.flush();
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
-    }
-
-    private String getContentType(String url) {
-        String contentType = "";
-        if (url.endsWith(".html")) {
-            contentType = "text/html";
-        } else if (url.endsWith(".css")) {
-            contentType = "text/css";
-        } else if (url.endsWith(".js")) {
-            contentType = "application/javascript";
-        } else if (url.endsWith(".ico")) {
-            contentType = "image/x-icon";
-        } else if (url.endsWith(".png")) {
-            contentType = "image/png";
-        } else if (url.endsWith(".jpg")) {
-            contentType = "image/jpg";
-        }
-        return contentType;
     }
 }

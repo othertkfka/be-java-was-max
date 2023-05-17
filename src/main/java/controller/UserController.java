@@ -12,7 +12,6 @@ public class UserController {
         Map<String, String> requestParam = httpRequest.getRequestParam();
         User user = new User(requestParam.get("userId"), requestParam.get("password"), requestParam.get("name"), requestParam.get("email"));
 
-        httpResponse.setRedirect();
-        return "/index.html";
+        return "redirect:/index.html";
     }
 }
