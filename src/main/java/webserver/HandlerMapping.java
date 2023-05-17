@@ -14,12 +14,12 @@ import java.util.Properties;
 public class HandlerMapping {
     private final static Logger logger = LoggerFactory.getLogger(HandlerMapping.class);
 
-    private final int CLASS_INDEX = 0;
-    private final int METHOD_INDEX = 1;
-    private final String MAPPING_PATH = "/config/mapping.properties";
-    private Properties properties = new Properties();
+    private static final int CLASS_INDEX = 0;
+    private static final int METHOD_INDEX = 1;
+    private static final String MAPPING_PATH = "/config/mapping.properties";
+    private static Properties properties = new Properties();
 
-    public String handleRequest(HttpRequest httpRequest, HttpResponse httpResponse) {
+    public static String handleRequest(HttpRequest httpRequest, HttpResponse httpResponse) {
         String requestUrl = httpRequest.getRequestUrl();
         if (requestUrl.matches(".+\\.[^./]+$")) {
             return requestUrl;
@@ -44,10 +44,10 @@ public class HandlerMapping {
         return view;
     }
 
-    private String getRequestMapping(String requestUrl) {
+    private static String getRequestMapping(String requestUrl) {
         String mapping = "";
         try {
-            InputStream reader = getClass().getResourceAsStream(MAPPING_PATH);
+            InputStream reader = HandlerMapping.class.getResourceAsStream(MAPPING_PATH);
             properties.load(reader);
             mapping = properties.getProperty(requestUrl);
         } catch (IOException e) {
