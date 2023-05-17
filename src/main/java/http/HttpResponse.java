@@ -30,7 +30,7 @@ public class HttpResponse {
     }
 
     public void setHeaders(String view) {
-        headers.put("Content-Type", getContentType(view) + ";charset=UTF-8");
+        headers.put("Content-Type", ContentType.getContentType(view) + ";charset=UTF-8");
         headers.put("Content-Length", String.valueOf(body.length));
     }
 
@@ -46,23 +46,5 @@ public class HttpResponse {
 
     public void setBody(byte[] body) {
         this.body = body;
-    }
-
-    private String getContentType(String url) {
-        String contentType = "";
-        if (url.endsWith(".html")) {
-            contentType = "text/html";
-        } else if (url.endsWith(".css")) {
-            contentType = "text/css";
-        } else if (url.endsWith(".js")) {
-            contentType = "application/javascript";
-        } else if (url.endsWith(".ico")) {
-            contentType = "image/x-icon";
-        } else if (url.endsWith(".png")) {
-            contentType = "image/png";
-        } else if (url.endsWith(".jpg")) {
-            contentType = "image/jpg";
-        }
-        return contentType;
     }
 }
