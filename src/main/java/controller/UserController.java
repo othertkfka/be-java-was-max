@@ -6,6 +6,7 @@ import http.HttpResponse;
 import model.User;
 
 import java.util.Map;
+import java.util.UUID;
 
 public class UserController {
 
@@ -22,15 +23,15 @@ public class UserController {
         String userId = requestParam.get("userId");
         String password = requestParam.get("password");
 
-        String viewName = "redirect:/index.html";
         try {
             User user = Database.findUserById(userId);
             if (!password.equals(user.getPassword())) {
-                viewName = "/user/login_failed.html";
+                return "/user/login_failed.html";
             }
+            httpResponse.setCookie(UUID.randomUUID().toString());
         } catch (NullPointerException e) {
-            viewName = "/user/login_failed.html";
+            return "/user/login_failed.html";
         }
-        return viewName;
+        return "redirect:/index.html";
     }
 }

@@ -40,6 +40,10 @@ public class HttpResponse {
         headers.put("Content-Length", "0");
     }
 
+    public void setCookie(String sessionId) {
+        headers.put("Set-Cookie", "sid=" + sessionId + "; Path=/");
+    }
+
     public byte[] getBody() {
         return body;
     }
