@@ -25,7 +25,7 @@ public class HandlerMapping {
             return new ModelAndView(requestUrl);
         }
 
-        String[] mapping = getRequestMapping(requestUrl).split("\\.");
+        String[] mapping = findRequestMapping(requestUrl).split("\\.");
 
         String className = mapping[CLASS_INDEX];
         String methodName = mapping[METHOD_INDEX];
@@ -45,7 +45,7 @@ public class HandlerMapping {
         return modelAndView;
     }
 
-    private static String getRequestMapping(String requestUrl) {
+    private static String findRequestMapping(String requestUrl) {
         String mapping = "";
         try {
             InputStream reader = HandlerMapping.class.getResourceAsStream(MAPPING_PATH);
