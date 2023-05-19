@@ -28,11 +28,11 @@ public class UserController {
         try {
             User user = Database.findUserById(userId);
             if (!password.equals(user.getPassword())) {
-                modelAndView.setView("\"/user/login_failed.html\"");
+                modelAndView.setView("/user/login_failed.html");
             }
             httpResponse.setCookie(UUID.randomUUID().toString());
         } catch (NullPointerException e) {
-            modelAndView.setView("\"/user/login_failed.html\"");
+            modelAndView.setView("/user/login_failed.html");
         }
         return modelAndView;
     }
