@@ -31,9 +31,9 @@ public class RequestHandler implements Runnable {
         ) {
             HttpRequest httpRequest = new HttpRequest(br);
             HttpResponse httpResponse = new HttpResponse();
-            String view = HandlerMapping.handleRequest(httpRequest, httpResponse);
+            ModelAndView modelAndView = HandlerMapping.handleRequest(httpRequest, httpResponse);
 
-            ViewResolver.resolve(view, httpResponse);
+            ViewResolver.resolve(modelAndView, httpResponse);
             responseHeader(dos, httpResponse);
             responseBody(dos, httpResponse);
         } catch (IOException e) {

@@ -2,10 +2,11 @@ package controller;
 
 import http.HttpRequest;
 import http.HttpResponse;
+import webserver.ModelAndView;
 
 public class HomeController {
 
-    public String home(HttpRequest httpRequest, HttpResponse httpResponse) {
-        return "/index.html";
+    public ModelAndView home(HttpRequest httpRequest, HttpResponse httpResponse) {
+        return new ModelAndView("/index.html");
     }
 }

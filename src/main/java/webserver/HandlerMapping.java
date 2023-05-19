@@ -19,29 +19,30 @@ public class HandlerMapping {
     private static final String MAPPING_PATH = "/config/mapping.properties";
     private static Properties properties = new Properties();
 
-    public static String handleRequest(HttpRequest httpRequest, HttpResponse httpResponse) {
+    public static ModelAndView handleRequest(HttpRequest httpRequest, HttpResponse httpResponse) {
         String requestUrl = httpRequest.getRequestUrl();
         if (requestUrl.matches(".+\\.[^./]+$")) {
-            return requestUrl;
+            return new ModelAndView(requestUrl);
         }
 
         String[] mapping = getRequestMapping(requestUrl).split("\\.");
 
         String className = mapping[CLASS_INDEX];
         String methodName = mapping[METHOD_INDEX];
-        String view = "";
+        ModelAndView modelAndView = null;
         try {
             Class<?> cls = Class.forName("controller." + className);
             Constructor<?> constructor = cls.getConstructor(null);
             Object instance = constructor.newInstance();
+
             Method method = cls.getDeclaredMethod(methodName, HttpRequest.class, HttpResponse.class);
-            view = (String) method.invoke(instance, httpRequest, httpResponse);
-            logger.debug("View Name : {}", view);
+            modelAndView = (ModelAndView) method.invoke(instance, httpRequest, httpResponse);
+            logger.debug("View Name : {}", modelAndView.getView());
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return view;
+        return modelAndView;
     }
 
     private static String getRequestMapping(String requestUrl) {
