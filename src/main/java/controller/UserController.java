@@ -15,7 +15,7 @@ public class UserController {
         User user = new User(requestParam.get("userId"), requestParam.get("password"), requestParam.get("name"), requestParam.get("email"));
         Database.addUser(user);
 
-        return "redirect:/index.html";
+        return "redirect:/";
     }
 
     public String login(HttpRequest httpRequest, HttpResponse httpResponse) {
@@ -32,6 +32,6 @@ public class UserController {
         } catch (NullPointerException e) {
             return "/user/login_failed.html";
         }
-        return "redirect:/index.html";
+        return "redirect:/";
     }
 }

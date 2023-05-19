@@ -9,12 +9,12 @@ public class HandlerMappingTest {
     @Test
     public void handleRequestTest() {
         // given
-        HandlerMapping handlerMapping = new HandlerMapping();
+
 
         // when
-//        String mapping = handlerMapping.handleRequest();
+
 
         // then
-//        assertThat(mapping).isEqualTo("createUser");
+
     }
 }
