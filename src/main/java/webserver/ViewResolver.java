@@ -18,23 +18,70 @@ public class ViewResolver {
             httpResponse.setStatus(302, "FOUND");
             httpResponse.setRedirectHeader(view.replace(REDIRECT_PREFIX, ""));
         } else {
-            httpResponse.setBody(generateDynamicBody(view));
+            if (view.endsWith(".html")) {
+                httpResponse.setBody(generateDynamicBody(view, modelAndView.getModel()));
+            } else {
+                httpResponse.setBody(generateStaticBody(view));
+            }
             httpResponse.setHeaders(view);
         }
     }
 
-    private static byte[] generateDynamicBody(String view) throws IOException {
-        // 확장자가 html인 경우 동적 생성
-        if (view.endsWith(".html")){
-            BufferedReader br = new BufferedReader(new FileReader(RequestUtil.findResource(view)));
-            StringBuilder body = new StringBuilder();
-            String line = "";
-            while((line = br.readLine()) != null) {
+    private static byte[] generateDynamicBody(String view, Model model) throws IOException {
+        BufferedReader br = new BufferedReader(new FileReader(RequestUtil.findResource(view)));
+        StringBuilder body = new StringBuilder();
+        String line;
+        while((line = br.readLine()) != null) {
+            if (line.trim().matches("\\{\\{.+}}")) {
+                String[] tokens = line.trim().replaceAll("\\{\\{|}}", "").split(":");
+                String contents = collectContents(br);
+
+                if (tokens[0].equals("if")) {
+                    for (String attributeName : model.getAttributeSet()) {
+                        Object object = model.getAttribute(attributeName);
+                        if (object instanceof String) {
+                            contents = contents.replace("{{" + attributeName + "}}", (String)object);
+                        }
+                    }
+                    if ((boolean) model.getAttribute(tokens[1])) {
+                        body.append(contents);
+                    }
+                } else if (tokens[0].equals("^if")) {
+                    for (String attributeName : model.getAttributeSet()) {
+                        Object object = model.getAttribute(attributeName);
+                        if (object instanceof String) {
+                            contents = contents.replace("{{" + attributeName + "}}", (String)object);
+                        }
+                    }
+                    if (!(boolean) model.getAttribute(tokens[1])) {
+                        body.append(contents);
+                    }
+                } else if (tokens[0].equals("for")) {
+
+                }
+            } else {
                 body.append(line);
             }
-            br.close();
-            return body.toString().getBytes();
         }
+        br.close();
+        return body.toString().getBytes();
+    }
+
+
+    private static byte[] generateStaticBody(String view) throws IOException {
         return Files.readAllBytes(RequestUtil.findResource(view).toPath());
+    }
+
+    private static String collectContents(BufferedReader br) throws IOException {
+        StringBuilder contents = new StringBuilder();
+        String line;
+        while((line = br.readLine()) != null) {
+            if (line.trim().matches("\\{\\{/\\w+}}")) {
+                break;
+            }
+            contents.append(line);
+        }
+
+        return contents.toString();
     }
 }

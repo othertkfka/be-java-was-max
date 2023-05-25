@@ -1,13 +1,13 @@
 package controller;
 
 import db.Database;
+import db.SessionStorage;
 import http.HttpRequest;
 import http.HttpResponse;
 import model.User;
 import webserver.ModelAndView;
 
 import java.util.Map;
-import java.util.UUID;
 
 public class UserController {
 
@@ -30,7 +30,9 @@ public class UserController {
             if (!password.equals(user.getPassword())) {
                 modelAndView.setView("/user/login_failed.html");
             }
-            httpResponse.setCookie(UUID.randomUUID().toString());
+            String sessionId = httpRequest.getSession();
+            SessionStorage.setSessionAttribute(sessionId, userId);
+            httpResponse.setCookie(sessionId);
         } catch (NullPointerException e) {
             modelAndView.setView("/user/login_failed.html");
         }

@@ -9,4 +9,12 @@ public class SessionStorage {
     public static boolean isStored(String sessionId) {
         return sessionStorage.containsKey(sessionId);
     }
+
+    public static String getSessionAttribute(String sessionId) {
+        return sessionStorage.get(sessionId);
+    }
+
+    public static void setSessionAttribute(String sessionId, String value) {
+        sessionStorage.put(sessionId, value);
+    }
 }
