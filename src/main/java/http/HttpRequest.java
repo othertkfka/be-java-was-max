@@ -30,12 +30,14 @@ public class HttpRequest {
     }
 
     public String getSession() {
-        String cookie = headers.get("Cookie");
-        String[] values = cookie.split(";");
-        for (String value : values) {
-            String[] tokens = value.trim().split("=");
-            if (tokens[0].equals("sid")){
-                return tokens[1];
+        if (headers.containsKey("Cookie")) {
+            String cookie = headers.get("Cookie");
+            String[] values = cookie.split(";");
+            for (String value : values) {
+                String[] tokens = value.trim().split("=");
+                if (tokens[0].equals("sid")){
+                    return tokens[1];
+                }
             }
         }
         return UUID.randomUUID().toString();
