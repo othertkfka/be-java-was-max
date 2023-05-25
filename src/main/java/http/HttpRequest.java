@@ -8,6 +8,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class HttpRequest {
     private static final Logger logger = LoggerFactory.getLogger(HttpRequest.class);
@@ -26,6 +27,18 @@ public class HttpRequest {
 
     public String getMethod() {
         return startLine.getMethod();
+    }
+
+    public String getSession() {
+        String cookie = headers.get("Cookie");
+        String[] values = cookie.split(";");
+        for (String value : values) {
+            String[] tokens = value.trim().split("=");
+            if (tokens[0].equals("sid")){
+                return tokens[1];
+            }
+        }
+        return UUID.randomUUID().toString();
     }
 
     public Map<String, String> getRequestParam() {
