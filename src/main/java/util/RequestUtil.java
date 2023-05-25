@@ -1,15 +1,13 @@
 package util;
 
-import java.io.IOException;
+import java.io.File;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
 public class RequestUtil {
-    public static byte[] findResource(String url) throws IOException {
+    public static File findResource(String url) {
         String resourcePath = "static";
         if (url.endsWith(".html")) {
             resourcePath = "templates";
@@ -20,7 +18,7 @@ public class RequestUtil {
             url = "/index.html";
         }
 
-        return Files.readAllBytes(Paths.get("./src/main/resources/" + resourcePath + url));
+        return new File("./src/main/resources/" + resourcePath + url);
     }
 
     public static String separateUrl(String requestLine) {
