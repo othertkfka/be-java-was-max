@@ -37,7 +37,7 @@ public class ViewResolver {
         String line;
         while((line = br.readLine()) != null) {
             if (line.trim().matches(TEMPLATE_START_REGEX)) {
-                processTemplate(line, br, model, body);
+                body.append(renderTemplate(line, br, model));
             } else {
                 body.append(line);
             }
@@ -46,33 +46,45 @@ public class ViewResolver {
         return body.toString().getBytes();
     }
 
-    private static void processTemplate(String line, BufferedReader br, Model model, StringBuilder body) throws IOException, IllegalAccessException {
+    private static String renderTemplate(String line, BufferedReader br, Model model) throws IOException, IllegalAccessException {
         String[] identifier = line.trim().replaceAll("\\{\\{|}}", "").split(":");
         String contents = collectContents(br);
-
+        String result = "";
         if (identifier[0].equals("for")) {
-            Collection<Object> list = (Collection<Object>)model.getAttribute(identifier[1]);
-            for (Object object : list) {
-                Class<?> cls = object.getClass();
-                String replaceContents = contents;
-                for(Field field : cls.getDeclaredFields()) {
-                    field.setAccessible(true);
-                    replaceContents = replaceContents.replace("{{" + field.getName() + "}}", (String)field.get(object));
-                }
-                body.append(replaceContents);
-            }
+            result = renderForWithListObject(model, identifier[1], contents);
         } else {
-            contents = replaceAttribute(model, contents);
-            if (identifier[0].equals("if")) {
-                if ((boolean) model.getAttribute(identifier[1])) {
-                    body.append(contents);
-                }
-            } else if (identifier[0].equals("^if")) {
-                if (!(boolean) model.getAttribute(identifier[1])) {
-                    body.append(contents);
-                }
+            result = renderIfStructure(model, identifier, contents);
+        }
+        return result;
+    }
+
+    private static String renderForWithListObject(Model model, String identifier, String contents) throws IllegalAccessException {
+        Collection<Object> list = (Collection<Object>)model.getAttribute(identifier);
+        StringBuilder renderResult = new StringBuilder();
+        for (Object object : list) {
+            Class<?> cls = object.getClass();
+            String replaceContents = contents;
+            for(Field field : cls.getDeclaredFields()) {
+                field.setAccessible(true);
+                replaceContents = replaceContents.replace("{{" + field.getName() + "}}", (String)field.get(object));
+            }
+            renderResult.append(replaceContents);
+        }
+        return renderResult.toString();
+    }
+
+    private static String renderIfStructure(Model model, String[] identifier, String contents) {
+        contents = replaceAttribute(model, contents);
+        if (identifier[0].equals("if")) {
+            if ((boolean) model.getAttribute(identifier[1])) {
+                return contents;
+            }
+        } else if (identifier[0].equals("^if")) {
+            if (!(boolean) model.getAttribute(identifier[1])) {
+                return contents;
             }
         }
+        return "";
     }
 
     private static String replaceAttribute(Model model, String contents) {
