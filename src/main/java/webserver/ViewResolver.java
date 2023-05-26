@@ -11,6 +11,8 @@ import java.nio.file.Files;
 public class ViewResolver {
 
     private static final String REDIRECT_PREFIX = "redirect:";
+    private static final String TEMPLATE_START_REGEX = "\\{\\{.+}}";
+    private static final String TEMPLATE_END_REGEX = "\\{\\{/\\w+}}";
 
     public static void resolve(ModelAndView modelAndView, HttpResponse httpResponse) throws IOException {
         String view = modelAndView.getView();
@@ -32,33 +34,8 @@ public class ViewResolver {
         StringBuilder body = new StringBuilder();
         String line;
         while((line = br.readLine()) != null) {
-            if (line.trim().matches("\\{\\{.+}}")) {
-                String[] tokens = line.trim().replaceAll("\\{\\{|}}", "").split(":");
-                String contents = collectContents(br);
-
-                if (tokens[0].equals("if")) {
-                    for (String attributeName : model.getAttributeSet()) {
-                        Object object = model.getAttribute(attributeName);
-                        if (object instanceof String) {
-                            contents = contents.replace("{{" + attributeName + "}}", (String)object);
-                        }
-                    }
-                    if ((boolean) model.getAttribute(tokens[1])) {
-                        body.append(contents);
-                    }
-                } else if (tokens[0].equals("^if")) {
-                    for (String attributeName : model.getAttributeSet()) {
-                        Object object = model.getAttribute(attributeName);
-                        if (object instanceof String) {
-                            contents = contents.replace("{{" + attributeName + "}}", (String)object);
-                        }
-                    }
-                    if (!(boolean) model.getAttribute(tokens[1])) {
-                        body.append(contents);
-                    }
-                } else if (tokens[0].equals("for")) {
-
-                }
+            if (line.trim().matches(TEMPLATE_END_REGEX)) {
+                processTemplate(line, br, model, body);
             } else {
                 body.append(line);
             }
@@ -67,6 +44,35 @@ public class ViewResolver {
         return body.toString().getBytes();
     }
 
+    private static void processTemplate(String line, BufferedReader br, Model model, StringBuilder body) throws IOException {
+        String[] identifier = line.trim().replaceAll("\\{\\{|}}", "").split(":");
+        String contents = collectContents(br);
+
+        if (identifier[0].equals("for")) {
+
+        } else {
+            contents = replaceAttribute(model, contents);
+            if (identifier[0].equals("if")) {
+                if ((boolean) model.getAttribute(identifier[1])) {
+                    body.append(contents);
+                }
+            } else if (identifier[0].equals("^if")) {
+                if (!(boolean) model.getAttribute(identifier[1])) {
+                    body.append(contents);
+                }
+            }
+        }
+    }
+
+    private static String replaceAttribute(Model model, String contents) {
+        for (String attributeName : model.getAttributeSet()) {
+            Object object = model.getAttribute(attributeName);
+            if (object instanceof String) {
+                contents = contents.replace("{{" + attributeName + "}}", (String)object);
+            }
+        }
+        return contents;
+    }
 
     private static byte[] generateStaticBody(String view) throws IOException {
         return Files.readAllBytes(RequestUtil.findResource(view).toPath());
@@ -76,7 +82,7 @@ public class ViewResolver {
         StringBuilder contents = new StringBuilder();
         String line;
         while((line = br.readLine()) != null) {
-            if (line.trim().matches("\\{\\{/\\w+}}")) {
+            if (line.trim().matches(TEMPLATE_END_REGEX)) {
                 break;
             }
             contents.append(line);
