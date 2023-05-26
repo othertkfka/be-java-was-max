@@ -1,13 +1,16 @@
 package webserver;
 
-import java.io.*;
-import java.net.Socket;
-import java.util.Map;
-
 import http.HttpRequest;
 import http.HttpResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.Socket;
+import java.util.Map;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
@@ -33,7 +36,7 @@ public class RequestHandler implements Runnable {
             ViewResolver.resolve(modelAndView, httpResponse);
             responseHeader(dos, httpResponse);
             responseBody(dos, httpResponse);
-        } catch (IOException e) {
+        } catch (IOException | IllegalAccessException e) {
             e.printStackTrace();
         }
     }
