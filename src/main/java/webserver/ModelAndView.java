@@ -4,6 +4,10 @@ public class ModelAndView {
     private String view;
     private Model model;
 
+    public ModelAndView() {
+
+    }
+
     public ModelAndView(String view) {
         this.view = view;
     }
