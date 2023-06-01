@@ -57,14 +57,12 @@ public class TemplateEngine {
 
     private String renderIfStructure(Model model, String[] identifier, String contents) {
         contents = replaceAttribute(model, contents);
-        if (identifier[0].equals("if")) {
-            if ((boolean) model.getAttribute(identifier[1])) {
-                return contents;
-            }
-        } else if (identifier[0].equals("^if")) {
-            if (!(boolean) model.getAttribute(identifier[1])) {
-                return contents;
-            }
+        boolean ifOrNotIf = true;
+        if (identifier[0].equals("^if")) {
+            ifOrNotIf = false;
+        }
+        if (ifOrNotIf == (boolean) model.getAttribute(identifier[1])) {
+            return contents;
         }
         return "";
     }
