@@ -20,13 +20,9 @@ public class ViewResolver {
                 TemplateEngine templateEngine = new TemplateEngine();
                 httpResponse.setBody(templateEngine.generateDynamicResource(view, modelAndView.getModel()));
             } else {
-                httpResponse.setBody(generateStaticBody(view));
+                httpResponse.setBody(Files.readAllBytes(RequestUtil.findResource(view).toPath()));
             }
             httpResponse.setHeaders(view);
         }
-    }
-
-    private byte[] generateStaticBody(String view) throws IOException {
-        return Files.readAllBytes(RequestUtil.findResource(view).toPath());
     }
 }
