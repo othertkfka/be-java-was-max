@@ -10,7 +10,7 @@ public class ViewResolver {
 
     private static final String REDIRECT_PREFIX = "redirect:";
 
-    public void resolve(ModelAndView modelAndView, HttpResponse httpResponse) throws IOException, IllegalAccessException {
+    public static void resolve(ModelAndView modelAndView, HttpResponse httpResponse) throws IOException, IllegalAccessException {
         String view = modelAndView.getView();
         if (view.startsWith(REDIRECT_PREFIX)) {
             httpResponse.setStatus(302, "FOUND");
