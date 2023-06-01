@@ -5,7 +5,6 @@ import db.SessionStorage;
 import http.HttpRequest;
 import http.HttpResponse;
 import model.User;
-import webserver.Model;
 import webserver.ModelAndView;
 
 import java.util.Collection;
@@ -44,12 +43,10 @@ public class UserController {
 
     public ModelAndView getUserList(HttpRequest httpRequest, HttpResponse httpResponse) {
         String sessionId = httpRequest.getSession();
-        ModelAndView modelAndView = new ModelAndView();
+        ModelAndView modelAndView = new ModelAndView(httpRequest);
         if (SessionStorage.isStored(sessionId)) {
             Collection<User> users = Database.findAll();
-            Model model = new Model();
-            model.addAttribute("users", users);
-            modelAndView.setModel(model);
+            modelAndView.addModelAttribute("users", users);
             modelAndView.setView("/user/list.html");
             return modelAndView;
         }
