@@ -57,10 +57,7 @@ public class TemplateEngine {
 
     private String renderIfStructure(Model model, String[] identifier, String contents) {
         contents = replaceAttribute(model, contents);
-        boolean ifOrNotIf = true;
-        if (identifier[0].equals("^if")) {
-            ifOrNotIf = false;
-        }
+        boolean ifOrNotIf = identifier[0].equals("if");
         if (ifOrNotIf == (boolean) model.getAttribute(identifier[1])) {
             return contents;
         }
