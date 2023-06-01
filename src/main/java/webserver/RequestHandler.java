@@ -33,7 +33,8 @@ public class RequestHandler implements Runnable {
             HttpResponse httpResponse = new HttpResponse();
             ModelAndView modelAndView = HandlerMapping.handleRequest(httpRequest, httpResponse);
 
-            ViewResolver.resolve(modelAndView, httpResponse);
+            ViewResolver viewResolver = new ViewResolver();
+            viewResolver.resolve(modelAndView, httpResponse);
             responseHeader(dos, httpResponse);
             responseBody(dos, httpResponse);
         } catch (IOException | IllegalAccessException e) {
